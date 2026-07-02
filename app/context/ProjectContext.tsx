@@ -25,13 +25,13 @@ interface ProjectContextType {
 const defaultProjects: Project[] = [
   {
     id: 1,
-    name: "Spouse Visa",
-    description: "UK Spouse & Family Visa solicitors site for MSD Solicitors — Manchester.",
+    name: "MSD Solicitors",
+    description: "MSD Solicitors — Manchester. Main site connected to this CMS.",
     url: "http://localhost:3000",
     apiUrl: getApiBaseUrl(),
     status: "live",
     color: "from-[#062f36] to-[#0f6b72]",
-    icon: "SV",
+    icon: "MSD",
     sections: ["Reviews", "Eligibility Points", "FAQs", "Services", "Fees", "Process Steps", "Why Choose Us", "Team Members", "Site Settings"],
   },
   {
