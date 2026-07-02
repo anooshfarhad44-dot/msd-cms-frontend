@@ -7,10 +7,20 @@
  * between tabs doesn't re-hit the backend every single time.
  */
 
-const API_BASE_URL =
-  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_URL
-    ? process.env.NEXT_PUBLIC_API_URL
-    : "http://localhost:5000") + "/api";
+const DEFAULT_API_URL = "http://localhost:5000";
+
+export function getApiBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
+  return (configured ? configured : DEFAULT_API_URL).replace(/\/$/, "");
+}
+
+export function getApiAssetUrl(path?: string | null): string | undefined {
+  if (!path) return undefined;
+  const base = getApiBaseUrl();
+  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+const API_BASE_URL = `${getApiBaseUrl()}/api`;
 
 // ─── Simple in-memory GET cache ───────────────────────────────────────────────
 const CACHE_TTL = 30_000; // 30 seconds

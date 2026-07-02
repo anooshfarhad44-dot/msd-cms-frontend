@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { getApiBaseUrl } from "@/app/lib/api";
 
 interface Project {
   id: string | number;
@@ -27,7 +28,7 @@ const defaultProjects: Project[] = [
     name: "Spouse Visa",
     description: "UK Spouse & Family Visa solicitors site for MSD Solicitors — Manchester.",
     url: "http://localhost:3000",
-    apiUrl: "http://localhost:5000",
+    apiUrl: getApiBaseUrl(),
     status: "live",
     color: "from-[#062f36] to-[#0f6b72]",
     icon: "SV",

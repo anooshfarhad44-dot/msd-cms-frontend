@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Pencil, Trash2, Star, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import { reviewsService, type Review, type ReviewPayload } from "@/app/services/contentServices";
-import { api } from "@/app/lib/api";
+import { api, getApiAssetUrl } from "@/app/lib/api";
 import PageHeader from "@/app/components/ui/PageHeader";
 import DataTable from "@/app/components/ui/DataTable";
 import Modal from "@/app/components/ui/Modal";
@@ -137,7 +137,7 @@ export default function ReviewsPage() {
                 <div className="w-9 h-9 rounded-full overflow-hidden border border-[#dbe7e9] bg-slate-100 flex-shrink-0">
                   {r.image ? (
                     <img 
-                      src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}${r.image}`} 
+                      src={getApiAssetUrl(r.image) || ""} 
                       alt={r.name} 
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -203,7 +203,7 @@ export default function ReviewsPage() {
             <label className="block text-sm font-bold text-[#062f36]">Reviewer Image</label>
             {form.image && (
               <img 
-                src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}${form.image}`} 
+                src={getApiAssetUrl(form.image) || ""} 
                 alt="Preview" 
                 className="w-24 h-24 object-cover rounded-xl border border-[#dbe7e9]"
               />
