@@ -32,7 +32,7 @@ export default function LoginPage() {
       toast.success(`Welcome back, ${authState.user!.name}!`);
       router.push("/dashboard");
     } catch {
-      setError("Invalid credentials. Please use admin@example.com / admin123");
+      setError("Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
