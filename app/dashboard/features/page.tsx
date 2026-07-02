@@ -40,8 +40,19 @@ export default function FeaturesPage() {
     fetchData();
   }, []);
 
-  const openCreate = () => { setForm(empty); setEditId(null); setModalOpen(true); };
-  const openEdit = (r: Feature) => { const { _id, id, ...rest } = r; setForm(rest); setEditId(_id || id); setModalOpen(true); };
+  const openCreate = () => { 
+    setForm(empty); 
+    setEditId(null); 
+    setModalOpen(true); 
+  };
+  
+  const openEdit = (r: Feature) => { 
+    const { _id, id, ...rest } = r; 
+    setForm(rest); 
+    // Fallback to null if both are missing/undefined to satisfy TypeScript
+    setEditId(_id || id || null); 
+    setModalOpen(true); 
+  };
 
   const handleSave = async () => {
     if (!form.title) return toast.error("Title is required.");
@@ -89,7 +100,7 @@ export default function FeaturesPage() {
         actions={(r) => (
           <>
             <button onClick={() => openEdit(r)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#0f6b72] hover:bg-[#0f6b72]/10 transition-all"><Pencil size={15} /></button>
-            <button onClick={() => setDeleteId(r._id || r.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"><Trash2 size={15} /></button>
+            <button onClick={() => setDeleteId(r._id || r.id || null)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"><Trash2 size={15} /></button>
           </>
         )}
       />

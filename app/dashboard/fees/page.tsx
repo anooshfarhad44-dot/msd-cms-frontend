@@ -42,8 +42,18 @@ export default function FeesPage() {
     fetchData();
   }, []);
 
-  const openCreate = () => { setForm(empty); setEditId(null); setModalOpen(true); };
-  const openEdit = (r: Fee) => { const { _id, id, ...rest } = r; setForm(rest); setEditId(_id || id); setModalOpen(true); };
+  const openCreate = () => { 
+    setForm(empty); 
+    setEditId(null); 
+    setModalOpen(true); 
+  };
+  
+  const openEdit = (r: Fee) => { 
+    const { _id, id, ...rest } = r; 
+    setForm(rest); 
+    setEditId(_id || id || null); 
+    setModalOpen(true); 
+  };
 
   const handleSave = async () => {
     if (!form.label || !form.price) return toast.error("Label and price are required.");
@@ -93,7 +103,7 @@ export default function FeesPage() {
         actions={(r) => (
           <>
             <button onClick={() => openEdit(r)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#0f6b72] hover:bg-[#0f6b72]/10 transition-all"><Pencil size={15} /></button>
-            <button onClick={() => setDeleteId(r.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"><Trash2 size={15} /></button>
+            <button onClick={() => setDeleteId(r._id || r.id || null)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"><Trash2 size={15} /></button>
           </>
         )}
       />
@@ -102,8 +112,19 @@ export default function FeesPage() {
         <div className="space-y-4">
           <Input label="Service Label" required value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="e.g. Entry Clearance/Spouse Visa" />
           <Input label="Price" required value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="e.g. £800 - £1,500" />
-          <Select label="Category" required value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}
-            options={[{ value: "personal", label: "Personal Immigration" }, { value: "business", label: "Business Immigration" }, { value: "appeals", label: "Appeals & Specialized" }]} />
+          
+          <Select 
+            label="Category" 
+            required 
+            value={form.category} 
+            onChange={(e) => setForm({ ...form, category: e.target.value as "personal" | "business" | "appeals" })}
+            options={[
+              { value: "personal", label: "Personal Immigration" }, 
+              { value: "business", label: "Business Immigration" }, 
+              { value: "appeals", label: "Appeals & Specialized" }
+            ]} 
+          />
+
           <div className="grid grid-cols-3 gap-4">
             <Input label="Sort Order" type="number" value={String(form.sort_order)} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} />
             <div className="flex items-end pb-1"><Toggle checked={form.is_main} onChange={(v) => setForm({ ...form, is_main: v })} label="Highlighted" /></div>

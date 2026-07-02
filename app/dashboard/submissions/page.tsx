@@ -13,7 +13,10 @@ import Select from "@/app/components/ui/Select";
 import Textarea from "@/app/components/ui/Textarea";
 import Card from "@/app/components/ui/Card";
 
-const statusColors: Record<string, "red" | "gold" | "green" | "gray"> = {
+// Define a literal type aligned with service layer
+type SubmissionStatus = "new" | "read" | "replied" | "archived";
+
+const statusColors: Record<SubmissionStatus, "red" | "gold" | "green" | "gray"> = {
   new: "red",
   read: "gold",
   replied: "green",
@@ -52,8 +55,8 @@ export default function SubmissionsPage() {
       try {
         const id = r._id || r.id;
         if (!id) return;
-        // FIX: was submissionsService.markRead (doesn't exist) — use updateStatus instead
-        await submissionsService.updateStatus(id, { status: "read", notes: r.notes || "" });
+        // Typecast status explicitly to ensure strict compliance
+        await submissionsService.updateStatus(id, { status: "read" as SubmissionStatus, notes: r.notes || "" });
         fetchData();
       } catch (error) {
         toast.error("Failed to update status");
@@ -63,7 +66,8 @@ export default function SubmissionsPage() {
 
   const handleSaveView = async (id: string | number, status: string, notes: string) => {
     try {
-      await submissionsService.updateStatus(id, { status, notes });
+      // FIX: Assert 'status' as SubmissionStatus to fulfill contract type constraint
+      await submissionsService.updateStatus(id, { status: status as SubmissionStatus, notes });
       toast.success("Updated!");
       setViewItem(null);
       fetchData();
@@ -140,9 +144,8 @@ export default function SubmissionsPage() {
           },
           { key: "phone",   label: "Phone",   render: (r) => <span className="text-sm text-[#62777d]">{r.phone || "—"}</span> },
           { key: "service", label: "Service", render: (r) => <span className="text-sm text-[#062f36] max-w-[150px] block truncate">{r.service || "—"}</span> },
-          { key: "status",  label: "Status",  render: (r) => <Badge color={statusColors[r.status] || "gray"}>{r.status}</Badge> },
+          { key: "status",  label: "Status",  render: (r) => <Badge color={statusColors[r.status as SubmissionStatus] || "gray"}>{r.status}</Badge> },
           { key: "source",  label: "Source",  render: (r) => <span className="text-xs text-slate-400">{r.source || "—"}</span> },
-          // FIX: Use createdAt (Mongoose timestamps) not created_at
           { key: "createdAt", label: "Date",  render: (r) => <span className="text-xs text-[#62777d]">{fmtDate(r.createdAt)}</span> },
         ]}
         actions={(r) => {
@@ -215,14 +218,14 @@ function ViewModal({
           <Row icon={Globe}         label="Service"     value={item.service} />
           <Row icon={User}          label="Nationality" value={item.nationality} />
           <Row icon={MessageSquare} label="Message"     value={item.message} />
-          {/* FIX: Use createdAt only (Mongoose timestamps field) */}
           <Row icon={Clock}         label="Submitted"   value={item.createdAt ? new Date(item.createdAt).toLocaleString("en-GB") : ""} />
         </Card>
         <div className="space-y-3">
           <Select
             label="Update Status"
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            // FIX: Explicitly cast e.target.value as SubmissionStatus to satisfy literal union constraint
+            onChange={(e) => setStatus(e.target.value as SubmissionStatus)}
             options={[
               { value: "new",      label: "New" },
               { value: "read",     label: "Read" },

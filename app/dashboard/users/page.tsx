@@ -15,7 +15,7 @@ import Badge from "@/app/components/ui/Badge";
 interface UserForm {
   name: string;
   email: string;
-  role: string;
+  role: "admin" | "editor";
   password: string;
 }
 
@@ -47,7 +47,12 @@ export default function UsersPage() {
   }, []);
 
   const openCreate = () => { setForm(empty); setEditId(null); setModalOpen(true); };
-  const openEdit = (r: CmsUser) => { setForm({ name: r.name, email: r.email, role: r.role, password: "" }); setEditId(r._id || r.id); setModalOpen(true); };
+  
+  const openEdit = (r: CmsUser) => { 
+    setForm({ name: r.name, email: r.email, role: r.role as "admin" | "editor", password: "" }); 
+    setEditId(r._id || r.id || null); 
+    setModalOpen(true); 
+  };
 
   const handleSave = async () => {
     if (!form.name || !form.email) return toast.error("Name and email are required.");
@@ -102,12 +107,13 @@ export default function UsersPage() {
             ),
           },
           { key: "role",       label: "Role",   render: (r) => <Badge color={r.role === "admin" ? "orange" : "teal"}>{r.role === "admin" ? "👑 Admin" : "✏️ Editor"}</Badge> },
-          { key: "created_at", label: "Joined", render: (r) => <span className="text-xs text-[#62777d]">{fmt(r.created_at || r.createdAt || "")}</span> },
+          // FIX: Changed key and render function to use exact 'createdAt' mapping from service type
+          { key: "createdAt", label: "Joined", render: (r) => <span className="text-xs text-[#62777d]">{fmt(r.createdAt || "")}</span> },
         ]}
         actions={(r) => (
           <>
             <button onClick={() => openEdit(r)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#0f6b72] hover:bg-[#0f6b72]/10 transition-all"><Pencil size={15} /></button>
-            <button onClick={() => setDeleteId(r._id || r.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"><Trash2 size={15} /></button>
+            <button onClick={() => setDeleteId(r._id || r.id || null)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"><Trash2 size={15} /></button>
           </>
         )}
       />
@@ -118,7 +124,7 @@ export default function UsersPage() {
             <Input label="Full Name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <Input label="Email Address" required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           </div>
-          <Select label="Role" required value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
+          <Select label="Role" required value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as "admin" | "editor" })}
             options={[{ value: "admin", label: "Admin — Full Access" }, { value: "editor", label: "Editor — Content Only" }]} />
           <Input
             label={editId ? "New Password (leave blank to keep)" : "Password"}

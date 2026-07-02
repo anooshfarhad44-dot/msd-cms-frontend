@@ -37,7 +37,14 @@ export default function TeamPage() {
   const [nextId, setNextId] = useState(3);
 
   const openCreate = () => { setForm(empty); setEditId(null); setModalOpen(true); };
-  const openEdit = (r: Member) => { const { _id, id, ...rest } = r; setForm(rest); setEditId(_id || id); setModalOpen(true); };
+  
+  const openEdit = (r: Member) => { 
+    const { _id, id, ...rest } = r; 
+    setForm(rest); 
+    // FIX: Fallback to null to handle strict type safety boundary
+    setEditId(_id || id || null); 
+    setModalOpen(true); 
+  };
 
   const handleSave = () => {
     if (!form.name) return toast.error("Name is required.");
@@ -93,7 +100,8 @@ export default function TeamPage() {
         actions={(r) => (
           <>
             <button onClick={() => openEdit(r)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#0f6b72] hover:bg-[#0f6b72]/10 transition-all"><Pencil size={15} /></button>
-            <button onClick={() => setDeleteId(r.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"><Trash2 size={15} /></button>
+            {/* FIX: Use fallback assignment for target delete context mapping */}
+            <button onClick={() => setDeleteId(r._id || r.id || null)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition-all"><Trash2 size={15} /></button>
           </>
         )}
       />
