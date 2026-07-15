@@ -46,6 +46,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         "Process Steps": "/dashboard/process",
         "Why Choose Us": "/dashboard/features",
         "Team Members": "/dashboard/team",
+        "Chatbot": "/dashboard/chatbot",
         "Site Settings": "/dashboard/settings",
       };
 

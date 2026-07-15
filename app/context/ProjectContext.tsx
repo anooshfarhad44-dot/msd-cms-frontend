@@ -32,7 +32,7 @@ const defaultProjects: Project[] = [
     status: "live",
     color: "from-[#062f36] to-[#0f6b72]",
     icon: "MSD",
-    sections: ["Reviews", "Eligibility Points", "FAQs", "Services", "Fees", "Process Steps", "Why Choose Us", "Team Members", "Site Settings"],
+    sections: ["Reviews", "Eligibility Points", "FAQs", "Services", "Fees", "Process Steps", "Why Choose Us", "Team Members", "Chatbot", "Site Settings"],
   },
   {
     id: 2,
