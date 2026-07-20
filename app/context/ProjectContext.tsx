@@ -1,15 +1,15 @@
-
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getApiBaseUrl } from "@/app/lib/api";
 
-interface Project {
+export interface Project {
   id: string | number;
   name: string;
   description: string;
   url: string;
   apiUrl: string;
+  apiPrefix: string;          // e.g. "spouse-visa" | "british-citizenship"
   status: "live" | "planned";
   color: string;
   icon: string;
@@ -25,25 +25,27 @@ interface ProjectContextType {
 const defaultProjects: Project[] = [
   {
     id: 1,
-    name: "MSD Solicitors",
-    description: "MSD Solicitors — Manchester. Main site connected to this CMS.",
-    url: "http://localhost:3000",
+    name: "Spouse Visa",
+    description: "MSD Spouse Visa site — UK spouse & family visa applications.",
+    url: "https://www.msdspousevisa.co.uk",
     apiUrl: getApiBaseUrl(),
+    apiPrefix: "spouse-visa",
     status: "live",
     color: "from-[#062f36] to-[#0f6b72]",
-    icon: "MSD",
-    sections: ["Reviews", "Eligibility Points", "FAQs", "Services", "Fees", "Process Steps", "Why Choose Us", "Team Members", "Chatbot", "Site Settings"],
+    icon: "SV",
+    sections: ["Reviews", "FAQs", "Services", "Fees", "Process Steps", "Features", "Blog Posts", "Logos", "Chatbot", "Settings", "Submissions"],
   },
   {
     id: 2,
-    name: "Project 2",
-    description: "Coming soon — connect your next project to this CMS.",
-    url: "#",
-    apiUrl: "#",
-    status: "planned",
-    color: "from-slate-400 to-slate-500",
-    icon: "P2",
-    sections: [],
+    name: "British Citizenship",
+    description: "MSD British Citizenship site — naturalisation & citizenship applications.",
+    url: "https://www.msdbritishcitizenship.co.uk",
+    apiUrl: getApiBaseUrl(),
+    apiPrefix: "british-citizenship",
+    status: "live",
+    color: "from-[#7a003c] to-[#5a0028]",
+    icon: "BC",
+    sections: ["Reviews", "FAQs", "Fees", "Features", "Process Steps", "Blog Posts", "Logos", "Settings", "Submissions"],
   },
   {
     id: 3,
@@ -51,6 +53,7 @@ const defaultProjects: Project[] = [
     description: "Coming soon — connect your next project to this CMS.",
     url: "#",
     apiUrl: "#",
+    apiPrefix: "",
     status: "planned",
     color: "from-slate-400 to-slate-500",
     icon: "P3",
@@ -68,10 +71,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedProjectId = localStorage.getItem("selectedProjectId");
     if (savedProjectId) {
-      const project = projects.find(p => p.id.toString() === savedProjectId);
-      if (project) {
-        setSelectedProject(project);
-      }
+      const project = projects.find((p) => p.id.toString() === savedProjectId);
+      if (project) setSelectedProject(project);
     }
   }, [projects]);
 

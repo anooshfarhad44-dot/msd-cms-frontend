@@ -12,8 +12,7 @@ import {
 import Card from "@/app/components/ui/Card";
 import { getAuth } from "@/app/lib/auth";
 import {
-  reviewsService, faqsService, homeServicesService, feesService,
-  processStepsService, submissionsService,
+  createProjectServices,
 } from "@/app/services/contentServices";
 import { useProject } from "@/app/context/ProjectContext";
 
@@ -79,13 +78,14 @@ export default function DashboardPage() {
         return;
       }
       try {
+        const svc = createProjectServices(selectedProject.apiPrefix);
         const [reviews, faqs, services, fees, processSteps, submissions] = await Promise.all([
-          reviewsService.list(),
-          faqsService.list(),
-          homeServicesService.list(),
-          feesService.list(),
-          processStepsService.list(),
-          submissionsService.list(),
+          svc.reviews.list(),
+          svc.faqs.list(),
+          svc.homeServices.list(),
+          svc.fees.list(),
+          svc.processSteps.list(),
+          svc.submissions.list(),
         ]);
         setData({
           reviews: reviews.length,

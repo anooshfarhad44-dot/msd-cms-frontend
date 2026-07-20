@@ -182,6 +182,46 @@ export const servicesService     = createResourceService<any,         any>      
 export const teamService         = createResourceService<any,         any>               ("/spouse-visa/home-services");
 export const projectsService     = createResourceService<any,         any>               ("/spouse-visa/home-services");
 
+// ─── British Citizenship — extra fee type ────────────────────────────────────
+export interface BcFee extends CmsRecord {
+  label: string;
+  price: string;
+  category: "solicitor" | "home_office";
+  note?: string;
+  is_main: boolean;
+  is_active: boolean;
+  sort_order: number;
+}
+export type BcFeePayload = Omit<BcFee, "_id" | "id">;
+
+// ─── Project-aware service factory ───────────────────────────────────────────
+// Usage: const svc = createProjectServices("british-citizenship")
+//        svc.reviews.list(), svc.faqs.list(), etc.
+export function createProjectServices(apiPrefix: string) {
+  return {
+    reviews:      createResourceService<Review,      ReviewPayload>     (`/${apiPrefix}/reviews`),
+    faqs:         createResourceService<Faq,         FaqPayload>        (`/${apiPrefix}/faqs`),
+    fees:         createResourceService<any,         any>               (`/${apiPrefix}/fees`),
+    processSteps: createResourceService<ProcessStep, ProcessStepPayload>(`/${apiPrefix}/process-steps`),
+    features:     createResourceService<Feature,     FeaturePayload>    (`/${apiPrefix}/features`),
+    logos:        createResourceService<Logo,        LogoPayload>       (`/${apiPrefix}/logos`),
+    blogPosts:    createResourceService<BlogPost,    BlogPostPayload>   (`/${apiPrefix}/blog-posts`),
+    // homeServices only exists for spouse-visa; for other projects returns empty
+    homeServices: apiPrefix === "spouse-visa"
+      ? createResourceService<HomeService, HomeServicePayload>(`/${apiPrefix}/home-services`)
+      : createResourceService<any, any>(`/${apiPrefix}/features`),
+    submissions: {
+      ...createResourceService<Submission, Partial<Submission>>(`/${apiPrefix}/submissions`),
+      updateStatus: (id: ResourceId, payload: Pick<Submission, "status" | "notes">) =>
+        createResourceService<Submission, Partial<Submission>>(`/${apiPrefix}/submissions`).update(id, payload),
+    },
+    settings: {
+      get:    ()             => api.get<any>(`/${apiPrefix}/settings`),
+      update: (data: any)    => api.put<any>(`/${apiPrefix}/settings`, data),
+    },
+  };
+}
+
 // ─── Submissions service ─────────────────────────────────────────────────────
 
 const submissionsResource = createResourceService<Submission, Partial<Submission>>("/spouse-visa/submissions");

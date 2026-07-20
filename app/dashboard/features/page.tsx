@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Globe } from "lucide-react";
 import toast from "react-hot-toast";
-import { featuresService, type Feature, type FeaturePayload } from "@/app/services/contentServices";
+import { createProjectServices, type Feature, type FeaturePayload } from "@/app/services/contentServices";
+import { useProject } from "@/app/context/ProjectContext";
 import PageHeader from "@/app/components/ui/PageHeader";
 import DataTable from "@/app/components/ui/DataTable";
 import Modal from "@/app/components/ui/Modal";
@@ -12,11 +13,13 @@ import Input from "@/app/components/ui/Input";
 import Textarea from "@/app/components/ui/Textarea";
 import Toggle from "@/app/components/ui/Toggle";
 import Badge from "@/app/components/ui/Badge";
+import Link from "next/link";
 
 type FeatureForm = FeaturePayload;
 const empty: FeatureForm = { title: "", description: "", is_active: true, sort_order: 0 };
 
 export default function FeaturesPage() {
+  const { selectedProject } = useProject();
   const [data, setData] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -24,68 +27,57 @@ export default function FeaturesPage() {
   const [form, setForm] = useState<FeatureForm>(empty);
   const [editId, setEditId] = useState<string | number | null>(null);
 
+  const svc = selectedProject ? createProjectServices(selectedProject.apiPrefix).features : null;
+
   const fetchData = async () => {
+    if (!svc) return;
     try {
       setLoading(true);
-      const features = await featuresService.list();
-      setData(features);
-    } catch (error) {
-      toast.error("Failed to load features");
-    } finally {
-      setLoading(false);
-    }
+      setData(await svc.list());
+    } catch { toast.error("Failed to load features"); }
+    finally { setLoading(false); }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, [selectedProject]);
 
-  const openCreate = () => { 
-    setForm(empty); 
-    setEditId(null); 
-    setModalOpen(true); 
-  };
-  
-  const openEdit = (r: Feature) => { 
-    const { _id, id, ...rest } = r; 
-    setForm(rest); 
-    // Fallback to null if both are missing/undefined to satisfy TypeScript
-    setEditId(_id || id || null); 
-    setModalOpen(true); 
-  };
+  const openCreate = () => { setForm(empty); setEditId(null); setModalOpen(true); };
+  const openEdit = (r: Feature) => { const { _id, id, ...rest } = r; setForm(rest); setEditId(_id || id || null); setModalOpen(true); };
 
   const handleSave = async () => {
+    if (!svc) return;
     if (!form.title) return toast.error("Title is required.");
     try {
-      if (editId) {
-        await featuresService.update(editId, form);
-        toast.success("Updated!");
-      } else {
-        await featuresService.create(form);
-        toast.success("Added!");
-      }
+      if (editId) { await svc.update(editId, form); toast.success("Updated!"); }
+      else        { await svc.create(form);          toast.success("Added!"); }
       setModalOpen(false);
       fetchData();
-    } catch (error) {
-      toast.error("Failed to save feature");
-    }
+    } catch { toast.error("Failed to save feature"); }
   };
 
   const handleDelete = async () => {
+    if (!svc || !deleteId) return;
     try {
-      if (!deleteId) return;
-      await featuresService.remove(deleteId);
+      await svc.remove(deleteId);
       toast.success("Deleted.");
       setDeleteId(null);
       fetchData();
-    } catch (error) {
-      toast.error("Failed to delete feature");
-    }
+    } catch { toast.error("Failed to delete feature"); }
   };
+
+  if (!selectedProject) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="w-16 h-16 rounded-full bg-[#0f6b72]/10 flex items-center justify-center mb-4"><Globe size={32} className="text-[#0f6b72]" /></div>
+        <h2 className="text-xl font-black text-[#062f36] mb-2">No project selected</h2>
+        <p className="text-[#62777d] mb-6">Choose a project first to manage its features.</p>
+        <Link href="/dashboard/projects" className="px-4 py-2 rounded-xl bg-[#0f6b72] text-white text-sm font-bold hover:bg-[#062f36] transition-colors">Go to Projects</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fadein space-y-6">
-      <PageHeader title="Why Choose Us" description="Manage the trust signals and key features shown on the site.">
+      <PageHeader title="Why Choose Us" description={`Manage trust signals and features for ${selectedProject.name}.`}>
         <Button onClick={openCreate}>+ Add Feature</Button>
       </PageHeader>
 

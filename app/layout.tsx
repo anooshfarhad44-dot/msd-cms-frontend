@@ -13,8 +13,16 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "MSD Solicitord CMS",
+  title: "MSD Solicitors CMS",
   description: "Content Management System for MSD Solicitors",
+  icons: {
+    icon: [
+      { url: "/cms-logo.ico", rel: "icon", sizes: "any" },
+      { url: "/cms-logo.webp", type: "image/webp", sizes: "32x32" },
+    ],
+    shortcut: "/cms-logo.ico",
+    apple: "/cms-logo.webp",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
