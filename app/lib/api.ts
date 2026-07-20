@@ -127,7 +127,7 @@ export const api = {
     return request<T>(path, { method: "DELETE" });
   },
 
-  upload: async (file: File, project = "spouse-visa"): Promise<{ path: string }> => {
+  upload: async (file: File, project = "spouse-visa", subdir = "reviews"): Promise<{ path: string }> => {
     const token = getToken();
     const formData = new FormData();
     formData.append("image", file);
@@ -135,7 +135,7 @@ export const api = {
     const headers: Record<string, string> = {};
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    const response = await fetch(`${API_BASE_URL}/upload?project=${encodeURIComponent(project)}`, {
+    const response = await fetch(`${API_BASE_URL}/upload?project=${encodeURIComponent(project)}&subdir=${encodeURIComponent(subdir)}`, {
       method: "POST",
       headers,
       body: formData,

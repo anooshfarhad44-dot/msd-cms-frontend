@@ -45,6 +45,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         "Fees": "/dashboard/fees",
         "Process Steps": "/dashboard/process",
         "Why Choose Us": "/dashboard/features",
+        "Blog Posts": "/dashboard/blog",
         "Team Members": "/dashboard/team",
         "Chatbot": "/dashboard/chatbot",
         "Site Settings": "/dashboard/settings",
@@ -106,6 +107,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       "/dashboard/fees",
       "/dashboard/process",
       "/dashboard/features",
+      "/dashboard/blog",
       "/dashboard/team",
       "/dashboard/settings",
     ];
